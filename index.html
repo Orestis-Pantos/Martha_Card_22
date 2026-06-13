@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Festive Surprise</title>
+    <style>
+        /* Base Styles & Fixed Bright Bez-Pink Background */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 50px 10px;
+            overflow-x: hidden;
+            
+            /* Brighter Bez-Pink (Pastel Beige-Pink) Background */
+            background-color: #f9ebea;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(214, 104, 112, 0.15) 2px, transparent 2px),
+                radial-gradient(circle at 85% 15%, rgba(244, 162, 97, 0.15) 3px, transparent 3px),
+                radial-gradient(circle at 50% 70%, rgba(181, 101, 118, 0.12) 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(214, 104, 112, 0.15) 2px, transparent 2px);
+            background-size: 300px 300px;
+            background-attachment: fixed;
+        }
+
+        /* Top Centered Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            width: 100%;
+        }
+
+        header h1 {
+            color: #b56576;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.7rem;
+            }
+        }
+
+        /* Container designed to handle outside confetti spacing perfectly on Mobile + PC */
+        .celebration-container {
+            position: relative;
+            width: 82%; 
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        /* Interactive Envelope/Card Design */
+        .card {
+            position: relative;
+            background-color: #e5989b;
+            border: 2px solid #b56576;
+            border-radius: 12px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 12px 25px rgba(181, 101, 118, 0.25);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* Envelope Initial Dimensions */
+            height: 200px;
+            max-height: 200px;
+            overflow: visible; /* Allows flap and outside confetti to render beautifully */
+        }
+
+        /* Envelope Flap (Before Unfolding) */
+        .envelope-flap {
+            position: absolute;
+            top: -2px; /* Align perfectly over border */
+            left: -2px;
+            width: calc(100% + 4px);
+            height: 55%;
+            background-color: #b56576;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.6s ease, opacity 0.4s ease, z-index 0.6s;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* Golden Wax Seal on Flap */
+        .envelope-flap::after {
+            content: '✨';
+            font-size: 1.1rem;
+            position: absolute;
+            bottom: -15px;
+            background: #ffb703;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Hover Feedback (While Sealed) */
+        .card:not(.open):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 35px rgba(181, 101, 118, 0.35);
+        }
+
+        /* Structural Inner Content Wrapper */
+        .card-content {
+            width: 100%;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Keeps initial text clean underneath flap */
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Initial Front Text Front */
+        .card-title {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            margin-bottom: 10px;
+        }
+
+        /* Hidden Message Container */
+        .card-message {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease 0.2s, max-height 0.5s ease, transform 0.5s ease 0.2s;
+            color: #6d597a;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            width: 100%;
+        }
+
+        /* ACTIVE / OPENED ENVELOPE STATE */
+        .card.open {
+            height: auto;
+            max-height: 800px; /* Expands dynamically downwards */
+            transform: scale(1.04); /* Gets slightly bigger */
+            background-color: #ffffff;
+            border-color: #ffb703;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            cursor: default;
+        }
+
+        /* Flap animation when opening */
+        .card.open .envelope-flap {
+            transform: rotateX(160deg);
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card.open .envelope-flap::after {
+            opacity: 0;
+        }
+
+        .card.open .card-content {
+            justify-content: flex-start; /* Realigns layout seamlessly to top */
+        }
+
+        .card.open .card-title {
+            color: #b56576;
+            font-size: 1.4rem;
+            border-bottom: 2px dashed #f28482;
+            padding-bottom: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .card.open .card-message {
+            opacity: 1;
+            max-height: 600px;
+            transform: translateY(0);
+        }
+
+        /* Fix: Symmetrical Confetti Streams Placed COMPLETELY Outside */
+        .confetti-stream {
+            position: absolute;
+            top: 40%;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        .confetti-stream.left {
+            left: -35px; /* Clearly outside the left border */
+        }
+
+        .confetti-stream.right {
+            right: -35px; /* Clearly outside the right border */
+        }
+
+        /* Particle Component Details */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            opacity: 0;
+        }
+
+        /* Javascript Animation Activation classes */
+        .shoot-left .confetti-piece {
+            animation: burstLeft 1.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        .shoot-right .confetti-piece {
+            animation: burstRight 1.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        /* Outer Symmetrical Arch Trajectories */
+        @keyframes burstLeft {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-70px - var(--x)), calc(-120px + var(--y))) scale(0.5) rotate(var(--r));
+                opacity: 0;
+            }
+        }
+
+        @keyframes burstRight {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(70px + var(--x)), calc(-120px + var(--y))) scale(0.5) rotate(var(--r));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ Έχετε μια κάρτα !!! ✨</h1>
+    </header>
+
+    <div class="celebration-container">
+        
+        <div id="confetti-left" class="confetti-stream left"></div>
+        <div id="confetti-right" class="confetti-stream right"></div>
+
+        <div class="card" id="festiveCard" onclick="openCard()">
+            <div class="envelope-flap"></div>
+            
+            <div class="card-content">
+                <div class="card-title" id="cardTitle">Άνοιξέ με </div>
+                <div class="card-message">
+                    <p>🎉 Χρόνια Πολλά Μάρθα 🎉</p>
+                    <br>
+                    <p>Να είσαι πάντα χαρούμενη και υγιής!
+                        Σου εύχομαι να κάνεις πολλά ταξίδια (και να περάσεις υπέροχα στο Erasmus σου), να εχεις χαρουμενες στιγμες με επιτυχειες και να βρεις ενα καλο παιδι αρκετα εξυπνο για να σε θελει αλλα αρκετα χαζω ετσι ωστε να κατσει !!!
+                    </p>
+                    <br>
+                    <p>Υ.Γ. ελπίζω να σου αρέσει το δώρο σου (δεν πιστευω στην εκδικηση) </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Array of vibrant colors for the festive confetti burst
+        const colors = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#f472b6', '#c084fc'];
+
+        // Generate confetti items dynamically outside the card borders
+        function buildConfettiBurst(sideContainer) {
+            sideContainer.innerHTML = ''; 
+            for (let i = 0; i < 35; i++) {
+                const piece = document.createElement('div');
+                piece.classList.add('confetti-piece');
+                
+                // Fine-tuned paths expanding outwards and arching downwards
+                const spreadX = Math.random() * 90; 
+                const spreadY = Math.random() * 220; 
+                const spinRot = Math.random() * 720; 
+                const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                piece.style.setProperty('--x', `${spreadX}px`);
+                piece.style.setProperty('--y', `${spreadY}px`);
+                piece.style.setProperty('--r', `${spinRot}deg`);
+                piece.style.backgroundColor = chosenColor;
+                
+                // Micro-staggering for physical depth simulation
+                piece.style.animationDelay = `${Math.random() * 0.15}s`;
+                
+                sideContainer.appendChild(piece);
+            }
+        }
+
+        function openCard() {
+            const card = document.getElementById('festiveCard');
+            const title = document.getElementById('cardTitle');
+            const leftConfetti = document.getElementById('confetti-left');
+            const rightConfetti = document.getElementById('confetti-right');
+
+            // Block multiple click re-triggers once opened
+            if (card.classList.contains('open')) return;
+
+            // 1. Unfold envelope and scale vertically
+            card.classList.add('open');
+            title.textContent = "Special Note";
+
+            // 2. Prepare outside particle matrices
+            buildConfettiBurst(leftConfetti);
+            buildConfettiBurst(rightConfetti);
+
+            // 3. Fire clean symmetrical side explosions
+            leftConfetti.classList.add('shoot-left');
+            rightConfetti.classList.add('shoot-right');
+        }
+    </script>
+</body>
+</html>
